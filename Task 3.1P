@@ -1,0 +1,40 @@
+#include "Adafruit_DHT.h"
+
+
+#define DHTPIN D6     // what pin we're connected to
+#define DHTTYPE DHT11		// DHT 11 
+
+DHT dht(DHTPIN, DHTTYPE);
+int led = D7; //led on argon
+
+
+void setup() {
+    
+    pinMode(led, OUTPUT);
+	
+	  dht.begin();
+	
+}
+
+void loop() {
+
+    float t = dht.getTempCelcius();
+	  float h = dht.getHumidity();
+
+  
+// Check if any reads failed and exit early (to try again).
+	if (isnan(t) || isnan(h)) {
+		Serial.println("Failed to read from DHT sensor!");
+		return;
+	}
+	
+	
+	digitalWrite(led, HIGH); // Turn led on
+	Particle.publish("temp&hum", String::format("{\"temp\": %4.2f, \"hum\": %4.2f}", t, h), PRIVATE);
+	delay(5000);
+	
+	digitalWrite(led, LOW);
+	delay(25000);
+	
+	
+}
